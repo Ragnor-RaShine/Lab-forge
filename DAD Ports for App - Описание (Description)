@@ -1,0 +1,52 @@
+Dynamic A-D Ports for Applications - addon for gufw - ufw (DAD Ports for App); License: GNU GPL version 3; Creator: Ragnor; E-Mail: Ragnor369@mail.ru
+
+  Программа является дополнением для фаервола Gufw-ufw. Она предназначена для автоматического управления соединениями в зависимости от используемых программ, которые определены для этих соединений. Если программа включается, то используемый ей порт(-ы) открывае(ю)тся, а если выключается, то закрывае(ю)тся. Всё происходит с учетом профиля в gufw. Также программа имеет механизм учитывающий UPnP, если нужно перенаправить входящее соединение с роутера на компьютер. 
+  
+  Для того, чтобы программа работала, нужно папку DAD Ports for App с ней поместить в директорию /opt. Чтобы происходила автозагрузка программы при старте системы нужно разместить файл Defense Module.conf в директорию /etc/init (подобный метод для автозагрузки применим к системе автозагрузки Upstart init).
+  
+  Поиск бинарников для запуска происходит по входным данным описания (description) из gufw к соединениям с помощью find в папке /usr/bin. Вывод найденных бинарников в файл происходит с учётом профиля, поэтому для проверки правильности найденных бинарников - смотреть содержимое файла вида Дом.App. Описания, для которых бинарники не найдены, выводятся в файл unknownPrcsReadMe. Для тех описаний, для которых не найден бинарник, программа не будет производить управление портами. Чтобы включить их в упраление, нужно добавить название бинарника (названия процесса диспетчера задач) самому в файл для ручного ввода вида Дом.PmanInput. Вид добавляемый записи должен быть такой":
+  
+  "Eiskalt DC++"="eiskaltdcpp-qt"
+  
+  Записи должны располагаться также как в файлах вида Дом.App. Каждая запись в отдельной строчке. Программа производит управление портами опираясь на записи в сводном файле Cache.App.
+
+  Чтобы происходил учет UPnP для какой-либо программы, необходимо добавить название её бинарника в файл вида Дом-UPnP.App. Вид добавляемой записи должен быть такой:
+  
+  "eiskaltdcpp-qt"
+  
+  Каждая запись также должна располагаться в отдельной строчке (кавычки как в примерах обязательны!). Если нужно посмотреть или поменять диапазон используемых портов или применяемые правила ufw смотреть в файле вида Дом-UPnP.Cache. При изменении в этом файле всё будет работать до тех пор, пока не введена или не убрана (новая) запись в файл вида Дом-UPnP.App, так как после этого будет переконструирован файл вида Дом-UPnP.Cache.
+  
+  P.S. 1: Как показала практика - многократные добавления удаления правил с помощью ufw - ведёт к ошибкам взаимодействия ufw с iptables. Что лечится перезагрузкой компьютера. Поэтому не рекомендуется изменять правило закрыть порты на удалить правило открыть порты!
+  
+  P.S. 2: Данная программа написана на языке Bash
+  
+  
+  The program is in addition to the firewall Gufw-ufw. It is designed to automatically manage connections depending on the programs that are defined for these compounds.
+  If the program is activated, it opens the port it used, and if turned off, then closes. Everything happens to fit the profile in gufw. The program also has a mechanism for taking into account the UPnP, if you want to redirect an incoming connection from the router to the computer.
+  
+  In order for the program to work, it is necessary folder DAD Ports for App to put it in the directory /opt.
+  To Startup program occurred at startup must be placed Defense Module.conf file in the directory /etc/init (for this method is applicable to the startup Upstart init system startup).
+  
+  Search binaries to start happening on the input data description of gufw compounds using find in the folder /usr/bin.
+  The conclusion found in the binary file comes with the account profile, so to validate the binaries found - to look kind of file contents Дом.App.
+  Descriptions for which binaries are found, are displayed in the unknown PrcsReadMe file. For those descriptions that are not binary is found, the program will not perform port management.
+  To enable them to manipulated, you need to add the name of the binary (the name of the Task Manager process) to a file for manual input type Дом.PmanInput. Type of added entry should be a ":
+  
+  "Eiskalt DC++"="eiskaltdcpp-qt"
+  
+  Entries must be located as well as in the form Дом.App files. Each entry in a separate line. The program produces a port management based on the entries in the consolidated Cache.App file.
+  
+  To came UPnP account for any program, you must add the name of its binary file type Дом-UPnP.App. Type of added entry should be:
+  
+  "eiskaltdcpp-qt"
+  
+  Each entry should also be located on a separate line (quotation marks in the examples are required!).
+  If you want to view or change the range of ports used or applicable rules ufw look in the file type of Дом-UPnP.Cache.
+  If you change this file, everything will work as long as there has not been introduced or removed (new) record in the file type of Дом-UPnP.App, because then it will be redesigned file type Дом-UPnP.Cache.
+  
+  P.S. 1: As shown - multiple uploads delete rules using the ufw - leads to errors ufw interaction with iptables.
+  What is treated reboot. Therefore it is not recommended to change the rule to close ports to remove a rule to open ports!
+  
+  P.S. 2: The program is written in Bash language
+  
+                  (Translated by Google Translator)
