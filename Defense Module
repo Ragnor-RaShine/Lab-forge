@@ -1,0 +1,1070 @@
+#!/bin/bash
+# Dynamic A-D Ports for Applications - addon for gufw - ufw (DAD Ports for App);    License: GNU GPL version 3
+# Creator: Ragnor;  E-Mail: Ragnor369@mail.ru
+sample="/opt/DAD Ports for App/info-profile-gufw.cfg"
+
+if [ -f "$sample" ]
+
+then
+
+sudo sed -n 2\p '/etc/gufw/gufw.cfg' > "$sample"
+sudo sed s/profile\ =\ /profile=/ "$sample" >> "$sample"
+. "$sample" 2>'/dev/null'
+
+else
+
+pif="`find /opt/* -name 'Defense Module' -print 2>'/dev/null'`"; paf=`dirname "$pif"`
+
+    if [ -f "${paf}/info-profile-gufw.cfg" ]
+    then
+    echo exist > "/dev/null"
+    else
+    touch "${paf}/info-profile-gufw.cfg"
+    fi
+
+echo ${paf}/info-profile-gufw.cfg > "$paf/meta-for-sample"
+sed -i 's/\//\\\//g' "$paf/meta-for-sample"
+sed -i 4{s/"sample=\"\/.*\""/sample=\""`cat "$paf/meta-for-sample"`"\"/} "$pif"
+
+sudo sed -n 2\p '/etc/gufw/gufw.cfg' > "${paf}/info-profile-gufw.cfg"
+sudo sed s/profile\ =\ /profile=/ "${paf}/info-profile-gufw.cfg" >> "${paf}/info-profile-gufw.cfg"
+. "${paf}/info-profile-gufw.cfg" 2>'/dev/null'
+sample="${paf}/info-profile-gufw.cfg"
+
+fi
+
+samdir=`dirname "$sample"`
+
+while :
+do
+    until [[ "`sudo sed -n 1\p "$sample"`" = "`sudo sed -n 2\p '/etc/gufw/gufw.cfg'`" ]]
+    
+    do
+    
+	sudo sed -n 2\p '/etc/gufw/gufw.cfg' > "$sample"
+	sudo sed s/profile\ =\ /profile=/ "$sample" >> "$sample"
+	. "$sample" 2>'/dev/null'
+	sleep 7s
+	
+    done
+
+
+
+
+    if [ -f "${samdir}/${profile}.DADprofile" ]
+
+    then
+    
+	l="`sudo sed -n "/Rule*/p" "/etc/gufw/${profile}.profile" | grep -cv "^ "` = `grep -cv "^ " "${samdir}/${profile}.DADprofile"`"
+    
+	if [[ $l ]]
+	then
+    
+	  if [[ "$l" = "0 = 0" ]]
+	  then
+	  echo nothing > "/dev/null"
+	  else
+      
+	      if [[ \"`sudo sed -n "s/description\ =\ //p" "/etc/gufw/${profile}.profile"`\" = \"`sudo sed "s/\"//g; s/.*=//g" "${samdir}/${profile}.DADprofile"`\" ]]
+	      then
+	      echo nothing > "/dev/null"
+	      else
+	      
+		    sudo sed -n "/Rule*/p" "/etc/gufw/${profile}.profile" > "${samdir}/metarule"
+		    sudo sed -i "s/\[//g; s/\]//g" "${samdir}/metarule"
+
+		    sudo sed -n "s/description\ =\ //p" "/etc/gufw/${profile}.profile" > "${samdir}/metapp"
+
+		    Sstrok=`grep -cv "^ " "${samdir}/metapp"`
+
+		    a=1
+
+		    while [ $a -le $Sstrok ]
+		    do
+			echo `sed -n ${a}\p "${samdir}/metarule"`=\"`sed -n ${a}\p "${samdir}/metapp"`\"
+			a=$(($a+1))
+		    done > "${samdir}/${profile}.DADprofile"
+
+		    sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+		    a=1
+		    b=0
+
+		    Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+		    sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+		    echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+		    . "${samdir}/meta-for-find"
+
+		    while [ $a -le $Sprog ]
+		    do
+			f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+			echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+			a=$(($a+1))
+			b=$(($b+1))
+		    done > "${samdir}/${profile}.App"
+
+		    sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+		    if [ -f "${samdir}/${profile}.PmanInput" ]
+		    then
+		    echo exist > "/dev/null"
+		    else
+		    touch "${samdir}/${profile}.PmanInput"
+		    fi
+		
+		
+		
+		
+		    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+		    cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+		    Sproc=`grep -cv "^ " "${samdir}/Cache.App"`
+		    a=1
+
+		    if [ -d "${samdir}/Ptemp" ]
+		    then
+		    echo exist > "/dev/null"
+		    else
+		    mkdir "${samdir}/Ptemp"
+		    fi
+
+		    if [ -d "${samdir}/Rtemp" ]
+		    then
+		    echo exist > "/dev/null"
+		    else
+		    mkdir "${samdir}/Rtemp"
+		    fi
+
+		    while [ $a -le $Sproc ]
+		    do
+		    f2=`sed -n ${a}{s/=.*//p} "${samdir}/Cache.App"`
+		    f3=`sed -n ${a}{"s/\"//g; s/.*=//p"} "${samdir}/Cache.App"`
+		    sed -n "s/=${f2}//p" "${samdir}/${profile}.DADprofile" > "${samdir}/Cache.Prule"
+		    sed -i s/....//g "${samdir}/Cache.Prule"
+		    Srule=`grep -cv "^ " "${samdir}/Cache.Prule"`
+		    c=1
+		    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+			if [ -d "${samdir}/Rtemp/${profile}" ]
+			then
+			echo exist > "/dev/null"
+			else
+			mkdir "${samdir}/Rtemp/${profile}"
+			fi
+
+		    echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = deny ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		    echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+			while [ $c -lt $Srule ]
+			do
+			c=$(($c+1))
+			f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+			echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"'
+			echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+			done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+		    echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		    echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+
+
+		    c=1
+		    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+		    echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = allow ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		    echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+			while [ $c -lt $Srule ]
+			do
+			c=$(($c+1))
+			f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+			echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"'
+			echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+			done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+		    echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		    echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+
+		    a=$(($a+1))
+		    done
+	      
+	      fi
+	  fi
+      
+	else
+    
+	  if [[ "$l" = "0 = `grep -cv "^ " "${samdir}/${profile}.DADprofile"`" ]]
+      
+	  then
+      
+	      sed "s/.*//g" "${samdir}/metarule" > "${samdir}/metarule"
+	      sed "s/.*//g" "${samdir}/metapp" > "${samdir}/metapp"
+	      sed "s/.*//g" "${samdir}/${profile}.DADprofile" > "${samdir}/${profile}.DADprofile"
+	      sed "s/.*//g" "${samdir}/procapp" > "${samdir}/procapp"
+	      sed "s/.*//g" "${samdir}/procapp2f" > "${samdir}/procapp2f"
+	      sed "s/.*//g" "${samdir}/meta-for-find" > "${samdir}/meta-for-find"
+	      sed "s/.*//g" "${samdir}/{profile}.App" > "${samdir}/{profile}.App"
+	      sed "s/.*//g" "${samdir}/unknownPrcsReadMe" > "${samdir}/unknownPrcsReadMe"
+	      sed "s/.*//g" "${samdir}/Дом.PmanInput" > "${samdir}/Дом.PmanInput"
+	      sed "s/.*//g" "${samdir}/Cache.App" > "${samdir}/Cache.App"
+	      sed "s/.*//g" "${samdir}/Cache.Prule" > "${samdir}/Cache.Prule"
+	      rm "${samdir}/Rtemp/${profile}/"*
+	  
+	  else
+      
+	      sudo sed -n "/Rule*/p" "/etc/gufw/${profile}.profile" > "${samdir}/metarule"
+	      sudo sed -i "s/\[//g; s/\]//g" "${samdir}/metarule"
+
+	      sudo sed -n "s/description\ =\ //p" "/etc/gufw/${profile}.profile" > "${samdir}/metapp"
+
+	      Sstrok=`grep -cv "^ " "${samdir}/metapp"`
+
+	      a=1
+
+	      while [ $a -le $Sstrok ]
+	      do
+		  echo `sed -n ${a}\p "${samdir}/metarule"`=\"`sed -n ${a}\p "${samdir}/metapp"`\"
+		  a=$(($a+1))
+	      done > "${samdir}/${profile}.DADprofile"
+
+	      sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+	      a=1
+	      b=0
+
+	      Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+	      sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+	      echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+	      . "${samdir}/meta-for-find"
+
+	      while [ $a -le $Sprog ]
+	      do
+		  f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+		  echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+		  a=$(($a+1))
+		  b=$(($b+1))
+	      done > "${samdir}/${profile}.App"
+
+	      sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+	      if [ -f "${samdir}/${profile}.PmanInput" ]
+	      then
+	      echo exist > "/dev/null"
+	      else
+	      touch "${samdir}/${profile}.PmanInput"
+	      fi
+	  
+	  
+	  
+	  
+	      sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+	      cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	      Sproc=`grep -cv "^ " "${samdir}/Cache.App"`
+	      a=1
+
+	      if [ -d "${samdir}/Ptemp" ]
+	      then
+	      echo exist > "/dev/null"
+	      else
+	      mkdir "${samdir}/Ptemp"
+	      fi
+
+	      if [ -d "${samdir}/Rtemp" ]
+	      then
+	      echo exist > "/dev/null"
+	      else
+	      mkdir "${samdir}/Rtemp"
+	      fi
+
+	      while [ $a -le $Sproc ]
+	      do
+	      f2=`sed -n ${a}{s/=.*//p} "${samdir}/Cache.App"`
+	      f3=`sed -n ${a}{"s/\"//g; s/.*=//p"} "${samdir}/Cache.App"`
+	      sed -n "s/=${f2}//p" "${samdir}/${profile}.DADprofile" > "${samdir}/Cache.Prule"
+	      sed -i s/....//g "${samdir}/Cache.Prule"
+	      Srule=`grep -cv "^ " "${samdir}/Cache.Prule"`
+	      c=1
+	      f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+		  if [ -d "${samdir}/Rtemp/${profile}" ]
+		  then
+		  echo exist > "/dev/null"
+		  else
+		  mkdir "${samdir}/Rtemp/${profile}"
+		  fi
+
+	      echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = deny ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	      echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	      echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	      echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+		  while [ $c -lt $Srule ]
+		  do
+		  c=$(($c+1))
+		  f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		  echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"'
+		  echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		  done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+	      echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	      echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+
+
+	      c=1
+	      f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+	      echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = allow ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	      echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	      echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	      echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+		  while [ $c -lt $Srule ]
+		  do
+		  c=$(($c+1))
+		  f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		  echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"'
+		  echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		  done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+	      echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	      echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+
+	      a=$(($a+1))
+	      done
+	  
+	  fi
+      
+	fi
+
+    else
+
+	touch "${samdir}/${profile}.DADprofile"
+    
+	if [[ `sudo sed -n "/Rule*/p" "/etc/gufw/${profile}.profile" | grep -cv "^ "` = 0 ]]
+    
+	then
+    
+	    echo nothing > "/dev/null"
+	
+	else
+    
+	    sudo sed -n "/Rule*/p" "/etc/gufw/${profile}.profile" > "${samdir}/metarule"
+	    sudo sed -i "s/\[//g; s/\]//g" "${samdir}/metarule"
+
+	    sudo sed -n "s/description\ =\ //p" "/etc/gufw/${profile}.profile" > "${samdir}/metapp"
+
+	    Sstrok=`grep -cv "^ " "${samdir}/metapp"`
+
+	    a=1
+
+	    while [ $a -le $Sstrok ]
+	    do
+		echo `sed -n ${a}\p "${samdir}/metarule"`=\"`sed -n ${a}\p "${samdir}/metapp"`\"
+		a=$(($a+1))
+	    done > "${samdir}/${profile}.DADprofile"
+
+	    sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+	    a=1
+	    b=0
+
+	    Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+	    sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+	    echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+	    . "${samdir}/meta-for-find"
+
+	    while [ $a -le $Sprog ]
+	    do
+		f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+		echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+		a=$(($a+1))
+		b=$(($b+1))
+	    done > "${samdir}/${profile}.App"
+
+	    sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+	    if [ -f "${samdir}/${profile}.PmanInput" ]
+	    then
+	    echo exist > "/dev/null"
+	    else
+	    touch "${samdir}/${profile}.PmanInput"
+	    fi
+	
+	
+	
+	
+	    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+	    cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	    Sproc=`grep -cv "^ " "${samdir}/Cache.App"`
+	    a=1
+
+	    if [ -d "${samdir}/Ptemp" ]
+	    then
+	    echo exist > "/dev/null"
+	    else
+	    mkdir "${samdir}/Ptemp"
+	    fi
+
+	    if [ -d "${samdir}/Rtemp" ]
+	    then
+	    echo exist > "/dev/null"
+	    else
+	    mkdir "${samdir}/Rtemp"
+	    fi
+
+	    while [ $a -le $Sproc ]
+	    do
+	    f2=`sed -n ${a}{s/=.*//p} "${samdir}/Cache.App"`
+	    f3=`sed -n ${a}{"s/\"//g; s/.*=//p"} "${samdir}/Cache.App"`
+	    sed -n "s/=${f2}//p" "${samdir}/${profile}.DADprofile" > "${samdir}/Cache.Prule"
+	    sed -i s/....//g "${samdir}/Cache.Prule"
+	    Srule=`grep -cv "^ " "${samdir}/Cache.Prule"`
+	    c=1
+	    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+		if [ -d "${samdir}/Rtemp/${profile}" ]
+		then
+		echo exist > "/dev/null"
+		else
+		mkdir "${samdir}/Rtemp/${profile}"
+		fi
+
+	    echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = deny ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	    echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+		while [ $c -lt $Srule ]
+		do
+		c=$(($c+1))
+		f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"'
+		echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+	    echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	    echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+
+
+	    c=1
+	    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+	    echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = allow ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	    echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+		while [ $c -lt $Srule ]
+		do
+		c=$(($c+1))
+		f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"'
+		echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+	    echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+	    echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+
+	    a=$(($a+1))
+	    done
+	
+	fi
+    
+    fi   
+
+
+    
+
+    if [[ -f "${samdir}/${profile}.App" ]]
+
+    then
+
+	if [[ `grep -cv "^ " "${samdir}/${profile}.App"` = 0 ]]
+    
+	then
+	
+	    if [[ `grep -cv "^ " "${samdir}/${profile}.DADprofile"` = 0 ]]
+	
+	    then
+	
+		echo nothing > "/dev/null"
+	    
+	    else
+	
+		sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+		a=1
+		b=0
+
+		Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+		sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+		echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+		. "${samdir}/meta-for-find"
+
+		while [ $a -le $Sprog ]
+		do
+		    f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+		    echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+		    a=$(($a+1))
+		    b=$(($b+1))
+		done > "${samdir}/${profile}.App"
+
+		sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+		if [ -f "${samdir}/${profile}.PmanInput" ]
+		then
+		echo exist > "/dev/null"
+		else
+		touch "${samdir}/${profile}.PmanInput"
+		fi
+	    
+		sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+		cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	    
+	    fi
+	
+	else
+	
+	    if [[ \"`sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq`\" = \"`sed "s/=.*//g" "${samdir}/${profile}.App"`\" ]]
+	
+	    then
+	
+		echo nothing > "/dev/null"
+	    
+	    else
+	
+		sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+		a=1
+		b=0
+
+		Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+		sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+		echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+		. "${samdir}/meta-for-find"
+
+		while [ $a -le $Sprog ]
+		do  
+		    f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+		    echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+		    a=$(($a+1))
+		    b=$(($b+1))
+		done > "${samdir}/${profile}.App"
+
+		sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+		if [ -f "${samdir}/${profile}.PmanInput" ]
+		then
+		echo exist > "/dev/null"
+		else
+		touch "${samdir}/${profile}.PmanInput"
+		fi
+	    
+		sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+		cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	
+	    fi
+	
+	fi
+
+    else
+
+	if [[ `grep -cv "^ " "${samdir}/${profile}.DADprofile"` = 0 ]]
+    
+	then
+    
+	    echo nothing > "/dev/null"
+    
+	else
+    
+	    sed "s/.*=//g" "${samdir}/${profile}.DADprofile" | sort | uniq > "${samdir}/procapp"
+
+	    a=1
+	    b=0
+
+	    Sprog=`grep -cv "^ " "${samdir}/procapp"`
+
+	    sed "s/\ .*\"/*\"/g" "${samdir}/procapp" > "${samdir}/procapp2f"
+
+	    echo prcs='('`cat "${samdir}/procapp2f"`')' > "${samdir}/meta-for-find"
+
+	    . "${samdir}/meta-for-find"
+
+	    while [ $a -le $Sprog ]
+	    do  
+		f1=`find /usr/bin/* -iname "${prcs[${b}]}" -print`
+		echo `sed -n ${a}\p "${samdir}/procapp"`=\"`basename "$f1"`\"
+		a=$(($a+1))
+		b=$(($b+1))
+	    done > "${samdir}/${profile}.App"
+
+	    sed -n "/=\"\"/p" "${samdir}/${profile}.App" > "${samdir}/unknownPrcsReadMe"
+
+	    if [ -f "${samdir}/${profile}.PmanInput" ]
+	    then
+	    echo exist > "/dev/null"
+	    else
+	    touch "${samdir}/${profile}.PmanInput"
+	    fi
+	
+	    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+	    cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+    
+	fi
+
+    fi
+
+
+
+
+    if [[ -f "${samdir}/Cache.App" ]]
+
+    then
+
+	if [[ `grep -cv "^ " "${samdir}/Cache.App"` = 0 ]]
+    
+	then
+    
+	    if [[ `grep -cv "^ " "${samdir}/${profile}.App"` > 0 ]]
+	
+	    then
+	
+		if [ -f "${samdir}/${profile}.PmanInput" ]
+		then
+		echo exist > "/dev/null"
+		else
+		touch "${samdir}/${profile}.PmanInput"
+		fi
+	    
+		sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+		cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	    
+	    else
+	
+		echo nothing > "/dev/null"
+	
+	    fi
+
+	else
+    
+	    if [[ `grep -cv "^ " "${samdir}/${profile}.App"` > 0 ]]
+	
+	    then
+	
+		if [[ \"`sed "/.*=\"\"/d; s/\"//g; s/=.*//g" "${samdir}/${profile}.App"; sed -n "/=\"\"/p" "${samdir}/${profile}.App" | sed "s/\"//g; s/=//g"`\" = \"`sed "s/\"//g; s/=.*//g" "${samdir}/Cache.App"`\" ]]
+	    
+		then
+	    
+		    echo nothing > "/dev/null"
+	    
+		else
+	    
+		    if [ -f "${samdir}/${profile}.PmanInput" ]
+		    then
+		
+			if [[ `grep -cv "^ " "${samdir}/${profile}.App"` > `grep -cv "^ " "${samdir}/Cache.App"` ]]
+		    
+			then
+		    
+			    if [[ `grep -cv "^ " "${samdir}/${profile}.PmanInput"` > 0 ]]
+			
+			    then
+			
+				sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+				cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+			
+			    else
+			
+				if [[ \"`sed "/.*=\"\"/d; s/\"//g; s/=.*//g" "${samdir}/${profile}.App"`\" = \"`sed "s/\"//g; s/=.*//g" "${samdir}/Cache.App"`\" ]]
+			    
+				then
+			    
+				    echo nothing > "/dev/null"
+			    
+				else
+			    
+				    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+			    
+				fi
+			
+			    fi
+		    
+			else
+		    
+			    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+			    cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+		    
+			fi
+		
+		    else
+		
+			touch "${samdir}/${profile}.PmanInput"
+		    
+			if [[ `grep -cv "^ " "${samdir}/${profile}.App"` > `grep -cv "^ " "${samdir}/Cache.App"` ]]
+		    
+			then
+		    
+			    if [[ \"`sed "/.*=\"\"/d; s/\"//g; s/=.*//g" "${samdir}/${profile}.App"`\" = \"`sed "s/\"//g; s/=.*//g" "${samdir}/Cache.App"`\" ]]
+			    
+			    then
+			    
+				echo nothing > "/dev/null"
+			    
+			    else
+			    
+				sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+			
+			    fi
+		    
+			else
+		    
+			    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+		    
+			fi
+		
+		    fi
+	    
+		fi
+	
+	    else
+	
+		sed "s/.*//g" "${samdir}/Cache.App" > "${samdir}/Cache.App"
+	
+	    fi
+
+	fi
+
+    else
+
+	if [[ `grep -cv "^ " "${samdir}/${profile}.App"` > 0 ]]
+	
+	then
+	
+	    if [ -f "${samdir}/${profile}.PmanInput" ]
+	    then
+	    echo exist > "/dev/null"
+	    else
+	    touch "${samdir}/${profile}.PmanInput"
+	    fi
+	    
+	    sed "/.*=\"\"/d" "${samdir}/${profile}.App" > "${samdir}/Cache.App"
+	    cat "${samdir}/${profile}.PmanInput" >> "${samdir}/Cache.App"
+	    
+	else
+	
+	    echo nothing > "/dev/null"    
+
+	fi
+    fi
+
+
+
+
+    if [[ `grep -cv "^ " "${samdir}/Cache.App"` > 0 ]]
+
+    then
+    
+	if [ -d "${samdir}/Ptemp" ]
+	then
+	echo exist > "/dev/null"
+	else
+	mkdir "${samdir}/Ptemp"
+	fi
+
+	if [ -d "${samdir}/Rtemp" ]
+	then
+	echo exist > "/dev/null"
+	else
+	mkdir "${samdir}/Rtemp"
+	fi
+
+	Sproc=`grep -cv "^ " "${samdir}/Cache.App"`
+	a=1
+	
+	while [ $a -le $Sproc ]
+
+	do
+    
+	    f2=`sed -n ${a}{s/=.*//p} "${samdir}/Cache.App"`
+	    f3=`sed -n ${a}{"s/\"//g; s/.*=//p"} "${samdir}/Cache.App"`
+	
+	    if [[ -f "${samdir}/Rtemp/${profile}/${f3}.mech1t" ]]
+	    then
+	    echo exist > "/dev/null"
+	    else
+    
+		sed -n "s/=${f2}//p" "${samdir}/${profile}.DADprofile" > "${samdir}/Cache.Prule"
+		sed -i s/....//g "${samdir}/Cache.Prule"
+		Srule=`grep -cv "^ " "${samdir}/Cache.Prule"`
+		c=1
+		f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+
+		    if [ -d "${samdir}/Rtemp/${profile}" ]
+		    then
+		    echo exist > "/dev/null"
+		    else
+		    mkdir "${samdir}/Rtemp/${profile}"
+		    fi
+
+		echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = deny ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+		    while [ $c -lt $Srule ]
+		    do
+		    c=$(($c+1))
+		    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/deny/allow/g; s/DENY/ALLOW/g }" "/etc/gufw/'${profile}'.profile"'
+		    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		    done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+
+		echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+	
+	    fi
+    
+	    if [[ -f "${samdir}/Rtemp/${profile}/${f3}.mech2e" ]]
+	    then
+	    echo exist > "/dev/null"
+	    else
+    
+		sed -n "s/=${f2}//p" "${samdir}/${profile}.DADprofile" > "${samdir}/Cache.Prule"
+		sed -i s/....//g "${samdir}/Cache.Prule"
+		Srule=`grep -cv "^ " "${samdir}/Cache.Prule"`
+		c=1
+		f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+	
+		echo 'while [[ `sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/policy\ =\ //p"" "/etc/gufw/'${profile}'.profile"` = allow ]]' > "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		echo do >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"' >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" > "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+		    while [ $c -lt $Srule ]
+		    do
+		    c=$(($c+1))
+		    f4=`sed -n ${c}\p "${samdir}/Cache.Prule"`
+		    echo 'sudo sed -i "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ { s/allow/deny/g; s/ALLOW/DENY/g }" "/etc/gufw/'${profile}'.profile"'
+		    echo 'sudo sed -n "/\['Rule${f4}'\]/,/\['Rule$((${f4} + 1))'\]/ "s/command\ =\ /sudo\ /p"" "/etc/gufw/'${profile}'.profile" >> "'${samdir}'/Ptemp/'${f3}\"
+		    done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+
+		echo '. "'${samdir}'/Ptemp/'${f3}\" >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		echo done >> "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+    
+	    fi
+
+	    a=$(($a+1))
+    
+	done
+    
+    else
+
+	echo nothing > "/dev/null"
+
+    fi
+
+
+
+
+    if [[ `grep -cv "^ " "${samdir}/${profile}-UPnP.App"` > 0 ]]
+
+    then
+    
+	if [[ `sed -n '/\`pgrep -c .* = 1/p' "${samdir}/${profile}-UPnP.Cache" | grep -cv "^ "` = `grep -cv "^ " "${samdir}/${profile}-UPnP.App"` ]]
+
+	then
+
+	    if [[ \"`sed -n '/\`pgrep -c .* = 1/p' "${samdir}/${profile}-UPnP.Cache" | sed 's/if \[\[ .* -c //g; s/\` = 1 \]\]//g'`\" = \"`cat "${samdir}/${profile}-UPnP.App"`\" ]]
+	
+	    then
+	
+		echo nothing > "/dev/null"
+	
+	    else
+	
+		pup=(`cat "${samdir}/${profile}-UPnP.App"`)
+		Spup=`grep -cv "^ " "${samdir}/${profile}-UPnP.App"`
+		k=0    
+		while [ $k -lt $Spup ]
+		do
+		    echo 'if [[ $((1 + v'${k}')) = 2 ]]'
+		    echo then
+		    echo 'z'${k}'=2'
+		    echo else
+		    echo 'z'${k}'=1'
+		    echo fi
+	
+		    echo 'while [[ `pgrep -c '${pup[${k}]}'` = $z'${k}' ]]'
+		    echo do
+		    echo 'sudo ufw allow in 30000:65000/udp'
+		    echo 'sleep 15s'
+		    echo 'sudo ufw deny in 30000:65000/udp'
+		    echo 'z'${k}'=2'
+		    echo 'v'${k}'=1'
+		    echo done
+	
+		    echo 'if [[ `pgrep -c '${pup[${k}]}'` = 1 ]]'
+		    echo then
+		    echo 'echo nothing > "/dev/null"'
+		    echo else
+		    echo 'v'${k}'=0'
+		    echo fi
+	
+		    k=$(($k+1))
+		done > "${samdir}/${profile}-UPnP.Cache"
+	
+	    fi
+
+	else
+
+	    pup=(`cat "${samdir}/${profile}-UPnP.App"`)
+	    Spup=`grep -cv "^ " "${samdir}/${profile}-UPnP.App"`
+	    k=0    
+	    while [ $k -lt $Spup ]
+	    do
+		echo 'if [[ $((1 + v'${k}')) = 2 ]]'
+		echo then
+		echo 'z'${k}'=2'
+		echo else
+		echo 'z'${k}'=1'
+		echo fi
+	
+		echo 'while [[ `pgrep -c '${pup[${k}]}'` = $z'${k}' ]]'
+		echo do
+		echo 'sudo ufw allow in 30000:65000/udp'
+		echo 'sleep 15s'
+		echo 'sudo ufw deny in 30000:65000/udp'
+		echo 'z'${k}'=2'
+		echo 'v'${k}'=1'
+		echo done
+	
+		echo 'if [[ `pgrep -c '${pup[${k}]}'` = 1 ]]'
+		echo then
+		echo 'echo nothing > "/dev/null"'
+		echo else
+		echo 'v'${k}'=0'
+		echo fi
+	
+		k=$(($k+1))
+	    done > "${samdir}/${profile}-UPnP.Cache"
+
+	fi
+
+    else
+
+	if [ -f "${samdir}/${profile}-UPnP.App" ]
+	then
+	echo exist > "/dev/null"
+	else
+	touch "${samdir}/${profile}-UPnP.App"
+	fi
+    
+	if [ -f "${samdir}/${profile}-UPnP.Cache" ]
+	then
+    
+	    if [[ \"`sed -n '/\`pgrep -c .* = 1/p' "${samdir}/${profile}-UPnP.Cache" | sed 's/if \[\[ .* -c //g; s/\` = 1 \]\]//g'`\" > 0 ]]
+	
+	    then
+	
+		sed "s/.*//g" "${samdir}/${profile}-UPnP.Cache" > "${samdir}/${profile}-UPnP.Cache"
+	
+	    else
+	
+		echo nothing > "/dev/null"
+	
+	    fi
+    
+	else
+    
+	    echo nothing > "/dev/null"
+    
+	fi
+
+    fi
+
+
+
+
+    if [[ "`sudo sed -n 1\p "$sample"`" != "`sudo sed -n 2\p '/etc/gufw/gufw.cfg'`" ]]
+
+    then
+
+	echo nothing > "/dev/null"
+
+    else
+
+	Sapp=`grep -cv "^ " "${samdir}/Cache.App"`
+    
+	if [[ $Sapp > 0 ]]
+    
+	then
+    
+	    a=1
+	
+	    while [ $a -le $Sapp ]
+
+	    do
+		f3=`sed -n ${a}{"s/\"//g; s/.*=//p"} "${samdir}/Cache.App"`
+	    
+		if [[ `pgrep -c "$f3"` = 1 ]]
+		then
+		. "${samdir}/Rtemp/${profile}/${f3}.mech1t"
+		else
+		. "${samdir}/Rtemp/${profile}/${f3}.mech2e"
+		fi
+	    
+		a=$(($a+1))
+
+	    done
+
+	else
+    
+	    echo nothing > "/dev/null"
+    
+	fi
+    fi
+
+
+
+
+    if [[ `grep -cv "^ " "${samdir}/${profile}-UPnP.App"` > 0 ]]
+
+    then
+
+	. "${samdir}/${profile}-UPnP.Cache"
+
+    else
+
+	echo nothing > "/dev/null"
+
+    fi
+
+    
+    
+    
+    sleep 7s
+    
+done
