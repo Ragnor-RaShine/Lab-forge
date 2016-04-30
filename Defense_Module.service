@@ -1,0 +1,9 @@
+[Unit]
+Description=Dynamic A-D Ports for Applications (DAD Ports for App)
+Requires=ufw.service
+After=ufw.service
+[Service]
+Type=oneshot
+ExecStart="/opt/DAD Ports for App/Defense Module"
+[Install]
+WantedBy=multi-user.target
